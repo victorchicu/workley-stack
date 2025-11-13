@@ -50,7 +50,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
   ollama:
-    image: docker.io/ollama/ollama:latest
+    image: docker.io/ollama/ollama:0.12.10
     tty: true
     ports:
       - "7869:11434"
@@ -75,12 +75,12 @@ services:
     depends_on:
       - ollama
     environment: # https://docs.openwebui.com/getting-started/env-configuration#default_models
-      - OLLAMA_BASE_URLS=http://host.docker.internal:7869 #comma separated ollama hosts
       - ENV=dev
       - WEBUI_AUTH=False
       - WEBUI_NAME=Workley AI
       - WEBUI_URL=http://localhost:8080
       - WEBUI_SECRET_KEY=t0p-s3cr3t
+      - OLLAMA_BASE_URLS=http://host.docker.internal:7869 #comma separated ollama hosts
     extra_hosts:
       - host.docker.internal:host-gateway
 volumes:
