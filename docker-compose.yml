@@ -50,7 +50,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
   ollama:
-    image: docker.io/ollama/ollama:0.12.10
+    image: docker.io/ollama/ollama:0.12.9
     tty: true
     ports:
       - "7869:11434"
