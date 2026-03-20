@@ -1,54 +1,24 @@
 services:
   # STACK
-  mongo:
-    image: mongo:8.0.3-noble
+  postgres:
+    image: pgvector/pgvector:pg17
     ports:
-      - "27017:27017"
-    restart: "no"
+      - "5432:5432"
+    restart: unless-stopped
     volumes:
-      - mongo_data:/data/db
-      - ./secrets/keyfile:/tmp/keyfile:ro
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - workley
-    entrypoint: >
-      bash -c "
-        cp /tmp/keyfile /etc/mongo-keyfile &&
-        chmod 400 /etc/mongo-keyfile &&
-        chown mongodb:mongodb /etc/mongo-keyfile &&
-        docker-entrypoint.sh mongod --replSet rs0 --bind_ip_all --keyFile /etc/mongo-keyfile
-      "
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-      retries: 10
-      timeout: 10s
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 10s
-  mongo-init:
-    image: mongo:8.0.3-noble
-    command: >
-      bash -c '
-        sleep 5;
-        mongosh --host mongo:27017 -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval "
-          rs.initiate({
-            _id: \"rs0\",
-            members: [
-              { _id: 0, host: \"mongo:27017\", priority: 1 },
-            ]
-          });
-        " || mongosh --host mongo:27017 -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval "rs.status()";
-        exit 0;
-      '
-    restart: "no"
-    networks:
-      - workley
-    depends_on:
-      mongo:
-        condition: service_healthy
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      timeout: 5s
+      retries: 5
+      start_period: 20s
   ollama:
     image: docker.io/ollama/ollama:0.12.9
     tty: true
@@ -84,8 +54,8 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
 volumes:
-  mongo_data:
   ollama_data:
+  postgres_data:
 networks:
   workley:
     driver: bridge
