@@ -58,4 +58,4 @@ volumes:
   postgres_data:
 networks:
   workley:
-    driver: bridgeSPRING_R2DBC_URL
+    driver: bridge
