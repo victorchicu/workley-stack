@@ -53,6 +53,21 @@ services:
       - OLLAMA_BASE_URLS=http://host.docker.internal:7869 #comma separated ollama hosts
     extra_hosts:
       - host.docker.internal:host-gateway
+  # APP
+  workley-app:
+    image: node:24-slim
+    working_dir: /app
+    command: sh -c "npm install && npx ng serve --host 0.0.0.0 --proxy-config proxy.docker.config.json --configuration development"
+    ports:
+      - "4200:4200"
+    volumes:
+      - ../workley-app:/app
+      - /app/node_modules
+    networks:
+      - workley
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: "no"
 volumes:
   ollama_data:
   postgres_data:
