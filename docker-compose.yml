@@ -1,5 +1,25 @@
 services:
   # STACK
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - workley
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   postgres:
     image: pgvector/pgvector:pg17
     ports:
@@ -77,6 +97,7 @@ services:
 volumes:
   ollama_data:
   postgres_data:
+  minio_data:
 networks:
   workley:
     driver: bridge
