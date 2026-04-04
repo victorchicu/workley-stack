@@ -74,6 +74,28 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
   # APP
+  workley-core:
+    build:
+      context: ../workley-core
+      dockerfile: Dockerfile
+    ports:
+      - "8443:8443"
+    restart: "no"
+    networks:
+      - workley
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ../environments/environment.${ENV:-development}.env
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8443/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
   workley-app:
     image: node:24-slim
     working_dir: /app
