@@ -39,40 +39,40 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-  ollama:
-    image: docker.io/ollama/ollama:0.12.9
-    tty: true
-    ports:
-      - "7869:11434"
-    restart: "no"
-    volumes:
-      - ./ollama/ollama:/root/.ollama
-    networks:
-      - workley
-    pull_policy: always
-    environment:
-      - OLLAMA_KEEP_ALIVE=24h
-      - OLLAMA_HOST=0.0.0.0
-  ollama-webui:
-    image: ghcr.io/open-webui/open-webui:main
-    ports:
-      - "8080:8080"
-    restart: "no"
-    volumes:
-      - ./ollama/ollama-webui:/app/backend/data
-    networks:
-      - workley
-    depends_on:
-      - ollama
-    environment: # https://docs.openwebui.com/getting-started/env-configuration#default_models
-      - ENV=dev
-      - WEBUI_AUTH=False
-      - WEBUI_NAME=Workley AI
-      - WEBUI_URL=http://localhost:8080
-      - WEBUI_SECRET_KEY=t0p-s3cr3t
-      - OLLAMA_BASE_URLS=http://host.docker.internal:7869 #comma separated ollama hosts
-    extra_hosts:
-      - host.docker.internal:host-gateway
+#  ollama:
+#    image: docker.io/ollama/ollama:0.12.9
+#    tty: true
+#    ports:
+#      - "7869:11434"
+#    restart: "no"
+#    volumes:
+#      - ./ollama/ollama:/root/.ollama
+#    networks:
+#      - workley
+#    pull_policy: always
+#    environment:
+#      - OLLAMA_KEEP_ALIVE=24h
+#      - OLLAMA_HOST=0.0.0.0
+#  ollama-webui:
+#    image: ghcr.io/open-webui/open-webui:main
+#    ports:
+#      - "8080:8080"
+#    restart: "no"
+#    volumes:
+#      - ./ollama/ollama-webui:/app/backend/data
+#    networks:
+#      - workley
+#    depends_on:
+#      - ollama
+#    environment: # https://docs.openwebui.com/getting-started/env-configuration#default_models
+#      - ENV=dev
+#      - WEBUI_AUTH=False
+#      - WEBUI_NAME=Workley AI
+#      - WEBUI_URL=http://localhost:8080
+#      - WEBUI_SECRET_KEY=t0p-s3cr3t
+#      - OLLAMA_BASE_URLS=http://host.docker.internal:7869 #comma separated ollama hosts
+#    extra_hosts:
+#      - host.docker.internal:host-gateway
   # APP
   workley-core:
     build:
@@ -117,7 +117,7 @@ services:
       retries: 30
       start_period: 60s
 volumes:
-  ollama_data:
+#  ollama_data:
   postgres_data:
   minio_data:
 networks:
